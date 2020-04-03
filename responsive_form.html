@@ -11,24 +11,28 @@
 
 <body>
     <div class="container">
-        <form name="register">
+        <form name="register" action="#" novalidate>
             <div class="row">
                 <div class="form-group col-lg-6">
 
-                    <label for="firstName">First Name</label>
-                    <input type="text" class="form-control" name="firstName" id="firstName" required autocomplete="off">
+                    <label for="firstName">First Name<span class="text-danger"> *</span></label>
+                    <input type="text" class="form-control" name="firstName" id="firstName" autocomplete="off" onblur="return firstNameValidate()">
+                    <span id="firstNameError" class="text-danger"></span>
                 </div>
                 <div class="form-group col-lg-6">
-                    <label for="lastName">Last Name</label>
-                    <input type="text" class="form-control" name="lastName" id="lastName" required autocomplete="off">
+                    <label for="lastName">Last Name<span class="text-danger"> *</span></label>
+                    <input type="text" class="form-control" name="lastName" id="lastName" autocomplete="off" onblur="return lastNameValidate()">
+                    <span id="lastNameError" class="text-danger"></span>
                 </div>
                 <div class="form-group col-lg-6">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" name="email" id="email" required autocomplete="off">
+                    <label for="email">Email<span class="text-danger"> *</span></label>
+                    <input type="email" class="form-control" name="email" id="email" autocomplete="off" onblur="return emailValidate()">
+                    <span id="emailError" class="text-danger"></span>
                 </div>
                 <div class="form-group col-lg-6">
-                    <label for="mobileNo">Mobile No.</label>
-                    <input type="text" class="form-control" name="mobileNo" id="mobileNo" autocomplete="off">
+                    <label for="mobileNo">Mobile No.<span class="text-danger"> *</span></label>
+                    <input type="text" class="form-control" name="mobileNo" id="mobileNo" autocomplete="off" onblur="return mobileNoValidate()">
+                    <span id="mobileNoError" class="text-danger"></span>
                 </div>
                 <div class="form-group col-lg-6">
                     <div class="d-flex" style="position: relative; top: 40px;">
@@ -52,10 +56,11 @@
                 <div class="form-group col-lg-6">
                     <label for="dateOfBirth">DOB</label>
                     <input type="date" class="form-control" name="dob" id="dateOfBirth" style="padding-left: 40px;">
+                    <span id="dateOfBirthError"></span>
                 </div>
                 <div class="form-group col-lg-12">
                     <div class="d-flex">
-                        <label class="col-lg-1" style="color: #fff;">Hobbies:</label>
+                        <label class="" style="color: #fff;">Hobbies:</label>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                             <label class="form-check-label" for="defaultCheck1">
@@ -97,7 +102,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-dark ">Submit</button>
+            <button type="submit" class="btn btn-dark">Submit</button>
     </div>
 
     </form>
@@ -122,6 +127,7 @@
             $(this).parent().find('label').css({ 'top': 0, 'font-size': '10px' })
         });
         $('.form-control').blur(function () {
+            debugger
             if ($(this).val()) {
                 return false
             }
@@ -149,7 +155,13 @@
                 var reader = new FileReader();
 
                 reader.onload = function (e) {
-                    $('#imgInp').attr('src', e.target.result);
+                    if (e.target.result.indexOf('data:image/') > -1) {
+                        $('#imgInp').css('display', 'block');
+                        $('#imgInp').attr('src', e.target.result);
+                    } else {
+                        $('#imgInp').css('display', 'none');
+                    }
+                    
                 }
 
                 reader.readAsDataURL(input.files[0]);
@@ -161,45 +173,93 @@
             $('#imgInp').css("display", "block")
         });
 
-        $("form[name='register']").validate({
-            // Specify validation rules
-            rules: {
-                // The key name on the left side is the name attribute
-                // of an input field. Validation rules are defined
-                // on the right side
-                firstname: "required",
-                lastname: "required",
-                email: {
-                    required: true,
-                    // Specify that email should be validated
-                    // by the built-in "email" rule
-                    email: true
-                },
-                mobileNo: {
-                    required: true,
-                    minlength: 10
-                },
-                dob:{
-                    required: true,
-                }
-            },
-            // Specify validation error messages
-            messages: {
-                firstname: "Please enter your firstname",
-                lastname: "Please enter your lastname",
-                password: {
-                    required: "Please provide a password",
-                    minlength: "Your password must be at least 5 characters long"
-                },
-                email: "Please enter a valid email address",
-                dob: "Please enter date of"
-            },
-            // Make sure the form is submitted to the destination defined
-            // in the "action" attribute of the form when valid
-            submitHandler: function (form) {
-                form.submit();
+
+        function firstNameValidate(){
+            
+            var firstName = document.getElementById('firstName').value;
+            var nameRegex = /^[A-Za-z]{3,}$/;
+
+            if(firstName==''){
+                document.getElementById('firstNameError').innerHTML = " * Please Fill First Name"
+                return false;
             }
-        });
+            else if(!nameRegex.test(firstName)){
+                if(firstName.length<3){
+                    document.getElementById('firstNameError').innerHTML = " * First name must contain at least 3 characters"
+                    return false;
+                }
+                else{
+                    document.getElementById('firstNameError').innerHTML = " * First name must not contain any digits, white-space or special symbols"
+                    return false;
+                }
+                
+            }
+            else{
+                document.getElementById('firstNameError').innerHTML = ""
+            }
+
+        }
+
+        function lastNameValidate(){
+            
+            var lastName = document.getElementById('lastName').value;
+            var nameRegex = /^[A-Za-z]{3,}$/;
+
+            if(lastName==''){
+                document.getElementById('lastNameError').innerHTML = " * Please Fill Last Name"
+                return false;
+            }
+            else if(!nameRegex.test(lastName)){
+                if(lastName.length<3){
+                    document.getElementById('lastNameError').innerHTML = " * Last name must contain at least 3 characters"
+                }
+                else{
+                    document.getElementById('lastNameError').innerHTML = " * Last name must not contain any digits, white-space or special symbols"
+                }
+                return false;
+            }
+            else{
+                document.getElementById('lastNameError').innerHTML = ""
+            }
+        }
+
+        function emailValidate(){
+            debugger
+            var email = document.getElementById('email').value;
+            var emailRegex = /^[a-zA-Z0-9]*@[a-zA-Z]*\.[a-z]+$/
+
+            if(email==''){
+                document.getElementById('emailError').innerHTML = " * Please enter email"
+                return false;
+            }else if(!emailRegex.test(email)){
+                document.getElementById('emailError').innerHTML= "Email must contain @ followed by . "
+            }
+            else{
+                document.getElementById('emailError').innerHTML = " "
+            }
+        }
+
+        function mobileNoValidate(){
+          
+            var mobileNo = document.getElementById('mobileNo').value;
+
+            if(mobileNo==''){
+                document.getElementById('mobileNoError').innerHTML = " * Please Provide Mobile Number"
+                return false;
+            }else if(isNaN(mobileNo)){
+                document.getElementById('mobileNoError').innerHTML="* Only digits allowed"
+                return false;
+            }else{ 
+
+                if(mobileNo.length!=10){
+                   document.getElementById('mobileNoError').innerHTML="* Number must be of 10 digits"
+                   return false;
+               }
+               else{
+                document.getElementById('mobileNoError').innerHTML=" "
+               }
+            }
+        }
     </script>
 </body>
 
